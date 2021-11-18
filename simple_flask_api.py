@@ -37,57 +37,66 @@ def parse_dict_by_metric(_dict, var):
 class Inventory(Resource):
     
     def __init__(self):
+        self.columns = ["Metric",
+                         "RegionID",
+                         "SizeRank",
+                         "RegionName",
+                         "RegionType",
+                         "StateName",
+                         "Week",
+                         "value"]
         self.column_name = "For-Sale Inventory Count"
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('StateName', type = str, default = None)
         self.parser.add_argument('SizeRank', type = int, default = None)
+        self.parser.add_argument('RegionName', type = str, default = None)
         self.args = self.parser.parse_args()
-        print(self.args)
         
         
     def get(self):
         data = load_data()
         data = parse_dict_by_metric(data, self.column_name)
-        if self.args['StateName']:
-            data = self.find_by_state(data)
-        if self.args['SizeRank']:
-            data = self.find_by_rank(data)          
+        for arg, value in self.args.items():
+            if value:
+                data = self.find_by_filter(data, arg)
         return flask.jsonify(data)
     
-    def find_by_state(self, data):
-        data = [item for item in data if item[5]==self.args['StateName']]
+    def find_by_filter(self, data, column):
+        idx = self.columns.index(column)
+        data = [item for item in data if item[idx]==self.args[column]]
         return data
     
-    def find_by_rank(self, data):
-        data = [item for item in data if item[2]==self.args['SizeRank']]
-        return data
 
 class SalePrice(Resource):
 
     def __init__(self):
+        self.columns = ["Metric",
+                         "RegionID",
+                         "SizeRank",
+                         "RegionName",
+                         "RegionType",
+                         "StateName",
+                         "Week",
+                         "value"]
         self.column_name = "Median Sale Price"
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('StateName', type = str, default = None)
         self.parser.add_argument('SizeRank', type = int, default = None)
+        self.parser.add_argument('RegionName', type = str, default = None)
         self.args = self.parser.parse_args()
-        print(self.args)
         
         
     def get(self):
         data = load_data()
         data = parse_dict_by_metric(data, self.column_name)
-        if self.args['StateName']:
-            data = self.find_by_state(data)
-        if self.args['SizeRank']:
-            data = self.find_by_rank(data)          
+        for arg, value in self.args.items():
+            if value:
+                data = self.find_by_filter(data, arg)
         return flask.jsonify(data)
     
-    def find_by_state(self, data):
-        data = [item for item in data if item[5]==self.args['StateName']]
-        return data
-    
-    def find_by_rank(self, data):
-        data = [item for item in data if item[2]==self.args['SizeRank']]
+    def find_by_filter(self, data, column):
+        idx = self.columns.index(column)
+        data = [item for item in data if item[idx]==self.args[column]]
         return data
     
     

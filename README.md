@@ -1,2 +1,3 @@
 # realestate_data_api
-API to access real estate data
+
+Basic Flask API accessing public real estate data offered by Zillow
